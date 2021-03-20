@@ -12,6 +12,7 @@ namespace Practice
 
         const int n = 10;
 
+        private Stack<int> stack = new Stack<int>();
         public bool IsEmpty()
         {
             if (Count == 0) return false;
