@@ -8,50 +8,56 @@ namespace Practice
 {
     public class StackClass<T>
     {
-        public T[] items { get; set; }
+        private T[] items; // элементы стека
+        private int count; // количество элементов
+        const int n = 20; // количество элементов в массиве по умолчанию
 
-        const int n = 10;
-
-        private Stack<int> stack = new Stack<int>();
-        public bool IsEmpty()
+        public StackClass()
         {
-            if (Count == 0) return false;
-            else return true;
+            items = new T[n];
         }
-        public int Count { get; private set; }
 
+        public StackClass(int length)
+        {
+            items = new T[length];
+        }
+
+        // пуст ли стек
+        public bool IsEmpty
+        {
+            get { return count == 0; }
+        }
+
+        // размер стека
+        public int Count
+        {
+            get { return count; }
+        }
+
+        // добвление элемента
         public void Push(T item)
         {
-            // увеличиваем стек
-            if (Count == items.Length)
-                Resize(items.Length + 10);
-
-            items[Count++] = item;
+            // если стек заполнен, выбрасываем исключение
+            if (count == items.Length)
+                throw new InvalidOperationException("Переполнение стека");
+            items[count++] = item;
         }
+
+        // извлечение элемента
         public T Pop()
         {
             // если стек пуст, выбрасываем исключение
-            if (IsEmpty())
+            if (IsEmpty)
                 throw new InvalidOperationException("Стек пуст");
-            T item = items[--Count];
-            items[Count] = default(T); // сбрасываем ссылку
-
-            if (Count > 0 && Count < items.Length - 10)
-                Resize(items.Length - 10);
-
+            T item = items[--count];
+            items[count] = default(T); // сбрасываем ссылку
             return item;
         }
+
+        // возвращаем элемент из верхушки стека
         public T Peek()
         {
-            return items[Count - 1];
-        }
-
-        private void Resize(int max)
-        {
-            T[] tempItems = new T[max];
-            for (int i = 0; i < Count; i++)
-                tempItems[i] = items[i];
-            items = tempItems;
+            return items[count - 1];
         }
     }
 }

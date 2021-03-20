@@ -12,32 +12,26 @@ namespace Test
         {
             string str = Console.ReadLine();
 
-            string[] s = new string[];
+            List<string> myList = new List<string>();
 
             int i = 0;
 
+            string s = "";
+
             foreach (var a in str)
             {
-                s[i] += a;
-                if (a == '$' || a == '(' || a == '+' || a == '-' || a == '*' ||
-                   a == '/' || a == ')')
+                if (a == '+' || a == '-' || a == '/' || a == '*' || a == '(' || a == ')')
                 {
-                    i++;
+                    if (s != "") myList.Add(s);
+                    s = "";
+                    myList.Add(a.ToString());
                 }
-
-                //    if (a != '$' && a != '(' && a != '+' && a != '-' && a != '*' &&
-                //        a != '/' && a != ')')
-                //    {
-                //        s[i] += a;
-                //    }
-                //    else
-                //    {
-                //        i++;
-                //        s[i] += a;
-                //        i++;
-                //    }
+                else
+                {
+                    s += a;
+                }
             }
-
+            if(str[str.Length - 1] != ')') myList.Add(s);
                 
             Console.Read();
         }

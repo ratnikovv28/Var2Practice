@@ -9,13 +9,7 @@ namespace Var2Practice
 {
     public class CalculateClass
     {
-        private string _arithmeticExpression;
-
-        public string ArithmeticExpression
-        {
-            get => _arithmeticExpression;
-            private set { _arithmeticExpression = value; }
-        }
+        private string ArithmeticExpression { get; set; }
 
         private int Result { get; set; }
 
@@ -24,9 +18,9 @@ namespace Var2Practice
             ArithmeticExpression = arithmeticExpression;
         }
 
-        public StackClass<int> T = new StackClass<int>(); //Для записи операций и скобок
+        private StackClass<string> T = new StackClass<string>(); //Для записи операций и скобок
 
-        public StackClass<int> E = new StackClass<int>(); //Для операндов
+        private StackClass<int> E = new StackClass<int>(); //Для операндов
 
         private int[,] jumpTable = new int[6, 7]
         {
@@ -38,77 +32,102 @@ namespace Var2Practice
             {4, 1, 4, 4, 2, 2, 4}
         };
 
-        public int GetResult() => Result;
-
-
-        //5 + 4 * 2
-        public void Calculate()
+        private int Calculate(int firstNum, int secondNum, string operation)
         {
-            foreach (char symbol in ArithmeticExpression)
+            switch (operation)
             {
-                if (symbol != '$' && symbol != '(' && symbol != '+' && symbol != '-' && symbol != '*' &&
-                    symbol != '/' && symbol != ')') E.Push(int.Parse(symbol.ToString()));
-                else
-                {
-                    int fisrtIndex = GetIndexFromTable(symbol);
-                    int secondIndex = GetIndexFromTable(T.)
-                    //switch (symbol)
-                    //{
-                    //    case '1':
-                    //    {
-
-                    //    }
-                    //        break;
-                    //    case '2':
-                    //    {
-
-                    //    }
-                    //        break;
-                    //    case '3':
-                    //    {
-
-                    //    }
-                    //        break;
-                    //    case '4':
-                    //    {
-
-                    //    }
-                    //        break;
-                    //    case '5':
-                    //    {
-                    //        Console.WriteLine("Произошла ошибка!");
-                    //        return;
-                    //    }
-                    //    case '6': return;
-                    //}
-                }
+                case "+": return  firstNum + secondNum;
+                case "-": return firstNum - secondNum;
+                case "/": return firstNum / secondNum;
+                case "*": return firstNum * secondNum;
             }
+            return 0;
         }
 
-        public static int GetIndexFromTable(char symbol)
+        public int GetResult()
+        {
+            T.Push("$");
+
+            List<string> str = ReadString(ArithmeticExpression);
+
+            for (int i = 0; i < str.Count; i++)
+            {
+                if (str[i] != "$" && str[i] != "(" && str[i] != "+" && str[i] != "-" && str[i] != "*" &&
+                    str[i] != "/" && str[i] != ")" && str[i] != null)
+                {
+                    E.Push(int.Parse(str[i].ToString()));
+                    if(T.IsEmpty) T.Push("$");
+                }
+                else
+                {
+                    switch (jumpTable[GetNumberFromTable(T.Peek()), GetNumberFromTable(str[i])])
+                    {
+                        case 1:
+                        {
+                            T.Pop();
+                            T.Push(str[i]);
+                        }
+                            break;
+                        case 2:
+                        {
+                            string operation = T.Peek();
+                            int secondNum = E.Peek();
+                            E.Pop();
+                            int firstNum = E.Peek();
+                            E.Pop();
+                            int result = Calculate(firstNum, secondNum, operation);
+                            E.Push(result);
+                            T.Push(str[i]);
+                        }
+                            break;
+                        case 3: T.Pop();
+                            break;
+                        case 4:
+                        {
+                            string operation = T.Peek();
+                            int secondNum = E.Peek();
+                            E.Pop();
+                            int firstNum = E.Peek();
+                            E.Pop();
+                            int result = Calculate(firstNum, secondNum, operation);
+                            E.Push(result);
+                        } break;
+                        case 5: Console.WriteLine("Возникла ошибка!");
+                            break;
+                        case 6: break;
+                    }
+                }
+            }
+
+            Result = E.Peek();
+            return Result;
+        }
+
+
+        private int GetNumberFromTable(string symbol)
         {
             int index = 0;
             switch (symbol)
             {
-                case ' ':
+                case "$":
                     index = 0;
                     break;
-                case '(':
+                case "(":
                     index = 1;
                     break;
-                case '+':
+                case "+":
                     index = 2;
                     break;
-                case '-':
+                case "-":
                     index = 3;
                     break;
-                case '*':
+                case "*":
                     index = 4;
                     break;
-                case '/':
+                case "/":
                     index = 5;
                     break;
-                case ')':
+                case ")":
                     index = 6;
                     break;
             }
@@ -116,26 +135,26 @@ namespace Var2Practice
             return index;
         }
 
-        public string[] Test(string str)
+        private List<string> ReadString(string str)
         {
-            string[] s = new string[6];
+            List<string> symbolsList = new List<string>(); //Подумать над названием переменной
 
-            int i = 0;
+            string number = "";
 
             foreach (var a in str)
             {
-                if (a != '$' && a != '(' && a != '+' && a != '-' && a != '*' &&
-                    a != '/' && a != ')')
+                if (a == '+' || a == '-' || a == '/' || a == '*' || a == '(' || a == ')')
                 {
-                    s[i] += a;
+                    if (number != "") symbolsList.Add(number);
+                    number = "";
+                    symbolsList.Add(a.ToString());
                 }
-                else
-                {
-                    i++;
-                }
+                else number += a;
             }
+            if (str[str.Length - 1] != ')') symbolsList.Add(number);
+            symbolsList.Add("$");
 
-            return s;
+            return symbolsList;
         }
     }
 }

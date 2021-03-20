@@ -10,7 +10,7 @@ namespace Var2Practice
     {
         static void Main(string[] args)
         {
-            Console.Write("Введите выражение:");
+            Console.Write("Введите выражение: ");
 
             string arithmeticExpression = Console.ReadLine();
 
@@ -19,6 +19,8 @@ namespace Var2Practice
             int Result = calculateClass.GetResult();
 
             Console.WriteLine("Результат выражения: {0}", Result);
+
+            Console.ReadLine();
         }
     }
 }
