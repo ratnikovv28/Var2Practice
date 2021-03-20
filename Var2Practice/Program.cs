@@ -10,6 +10,15 @@ namespace Var2Practice
     {
         static void Main(string[] args)
         {
+            Console.Write("Введите выражение:");
+
+            string arithmeticExpression = Console.ReadLine();
+
+            CalculateClass calculateClass = new CalculateClass(arithmeticExpression);
+
+            int Result = calculateClass.GetResult();
+
+            Console.WriteLine("Результат выражения: {0}", Result);
         }
     }
 }
