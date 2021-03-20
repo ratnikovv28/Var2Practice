@@ -12,7 +12,7 @@ namespace Test
         {
             string str = Console.ReadLine();
 
-            string[] s = new string[6];
+            string[] s = new string[];
 
             int i = 0;
 
