@@ -120,9 +120,19 @@ namespace Var2Practice
         {
             string[] s = new string[6];
 
+            int i = 0;
+
             foreach (var a in str)
             {
-                if()
+                if (a != '$' && a != '(' && a != '+' && a != '-' && a != '*' &&
+                    a != '/' && a != ')')
+                {
+                    s[i] += a;
+                }
+                else
+                {
+                    i++;
+                }
             }
 
             return s;
