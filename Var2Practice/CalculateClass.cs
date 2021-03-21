@@ -98,17 +98,21 @@ namespace Var2Practice
                 else if (str[i] == '+' || str[i] == '-' || str[i] == '/' || str[i] == '*' || str[i] == '(' || str[i] == ')')
                 {
                     if (symbol != "") symbolsList.Add(symbol);
+
                     symbol = "";
+
+                    if (i != 0 && str[i] == '(' && (str[i - 1] == '1' || str[i - 1] == '2' || str[i - 1] == '3' || str[i - 1] == '4' || str[i - 1] == '5' || str[i - 1] == '6'
+                                                    || str[i - 1] == '7' || str[i - 1] == '8' || str[i - 1] == '9' || str[i - 1] == '0')) symbolsList.Add("*");
+
                     symbolsList.Add(str[i].ToString());
+
+                    if (i != str.Length - 1 && str[i] == ')' && (str[i + 1] == '(' || (str[i + 1] == '1' || str[i + 1] == '2' || str[i + 1] == '3' || str[i + 1] == '4' || str[i + 1] == '5' || str[i + 1] == '6'
+                        || str[i + 1] == '7' || str[i + 1] == '8' || str[i + 1] == '9' || str[i + 1] == '0'))) symbolsList.Add("*");
                 }
 
-                else
-                {
-                    if(str[i + 1] == '(' && i != str.Length - 1) symbolsList.Add("*"); //Условие, которое позволяет не писать знак умножения, например: 4(25+5).
-                        symbol += str[i];
-                }
+                else symbol += str[i];
             }
-            if (str[str.Length - 2] != ')' && str[str.Length - 1] != ')') symbolsList.Add(symbol);
+            if ((str[str.Length - 2] != ')' && str[str.Length - 1] != ')') || (str[str.Length - 1] != ')' && str[str.Length - 2] == ')')) symbolsList.Add(symbol);
 
             symbolsList.Add("$"); //Доллар необходим, так как он сигнализирует алгоритму, что строка закончилась.
 
