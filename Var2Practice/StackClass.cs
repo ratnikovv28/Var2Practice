@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Practice
 {
+    //Класс разрабатывал Степанов Дмитрий
     public class StackClass<T>
     {
         private T[] items; // элементы стека

@@ -20,7 +20,8 @@ namespace Test
 
             foreach (var a in str)
             {
-                if (a == '+' || a == '-' || a == '/' || a == '*' || a == '(' || a == ')')
+                if(a == ' ') continue;
+                else if (a == '+' || a == '-' || a == '/' || a == '*' || a == '(' || a == ')')
                 {
                     if (s != "") myList.Add(s);
                     s = "";
@@ -31,8 +32,8 @@ namespace Test
                     s += a;
                 }
             }
-            if(str[str.Length - 1] != ')') myList.Add(s);
-                
+            if(str[str.Length - 2] != ')' && str[str.Length - 1] != ')' && (str[str.Length - 1] != ' ' || str[str.Length - 1] == ' ')) myList.Add(s);
+
             Console.Read();
         }
     }
