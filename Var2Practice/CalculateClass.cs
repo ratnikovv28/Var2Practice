@@ -12,7 +12,7 @@ namespace Var2Practice
     {
         private string ArithmeticExpression;
 
-        private int Result;
+        private double Result;
 
         public CalculateClass(string arithmeticExpression)
         {
@@ -21,11 +21,11 @@ namespace Var2Practice
 
         #region Стеки и таблица переходов
 
-        private StackClass<string> T = new StackClass<string>(); //Для записи операций и скобок
+        private StackClass<string> T = new StackClass<string>(); //Для записи операций и скобок.
 
-        private StackClass<int> E = new StackClass<int>(); //Для операндов
+        private StackClass<double> E = new StackClass<double>(); //Для операндов.
 
-        private byte[,] jumpTable = new byte[6, 7]
+        private byte[,] transitionTable = new byte[6, 7] //Таблица переходов.
         {
             {6, 1, 1, 1, 1, 1, 5},
             {5, 1, 1, 1, 1, 1, 3},
@@ -39,7 +39,7 @@ namespace Var2Practice
 
         #region Вспомогательные функции
 
-        private int Calculate(int firstNum, int secondNum, string operation)
+        private double CalculateExpression(double firstNum, double secondNum, string operation)
         {
             switch (operation)
             {
@@ -49,79 +49,84 @@ namespace Var2Practice
                 case "*": return firstNum * secondNum;
             }
             return 0;
-        }
+        } 
 
-        private int GetFunctionFromTable(string symbol)
+        private byte GetFunctionNumberFromTransitionTable(string symbol)
         {
-            int index = 0;
+            byte index = 0;
             switch (symbol)
             {
-                case "$":
-                    index = 0;
+                case "$": index = 0;
                     break;
-                case "(":
-                    index = 1;
+                case "(": index = 1;
                     break;
-                case "+":
-                    index = 2;
+                case "+": index = 2;
                     break;
-                case "-":
-                    index = 3;
+                case "-": index = 3;
                     break;
-                case "*":
-                    index = 4;
+                case "*": index = 4;
                     break;
-                case "/":
-                    index = 5;
+                case "/": index = 5;
                     break;
-                case ")":
-                    index = 6;
+                case ")": index = 6;
                     break;
             }
 
             return index;
-        }
+        } 
 
-        private List<string> ReadString(string str)
+        private List<string> ParsingString(string str)
         {
-            List<string> symbolsList = new List<string>(); //Подумать над названием переменной
+            List<string> symbolsList = new List<string>();
 
             string symbol = "";
 
-            foreach (char a in str)
+            for (int i = 0; i < str.Length; i++)
             {
-                if (a == ' ') continue;
-                else if (a == '+' || a == '-' || a == '/' || a == '*' || a == '(' || a == ')')
+                if (str[i] != '+' && str[i] != '-' && str[i] != '/' && str[i] != '*' && str[i] != '(' && str[i] != ')'
+                    && str[i] != '1' && str[i] != '2' && str[i] != '3' && str[i] != '4' && str[i] != '5' && str[i] != '6'
+                    && str[i] != '7' && str[i] != '8' && str[i] != '9' && str[i] != '0' && str[i] != ',') throw new Exception("Некорректные данные"); //Проверка на корректные символы.
+
+                if (str[i] == ' ') continue; //Проверка на наличие пробела, если есть, то в список символов пробел не идёт.
+
+                if ((str[i] == '-' && i == 0) || (str[i] == '-' && str[i - 1] == '('))      // Проверка возможных вариантов ввода:
+                {                                                                           // 1)Если пользователь введёт - в самом начале, например: -5 + 10.
+                    symbol += str[i];                                                       // 2)Если пользователь введёт отрицательное число в скобках, например: ... (-5 + 10).
+                }
+
+                else if (str[i] == '+' || str[i] == '-' || str[i] == '/' || str[i] == '*' || str[i] == '(' || str[i] == ')')
                 {
                     if (symbol != "") symbolsList.Add(symbol);
                     symbol = "";
-                    symbolsList.Add(a.ToString());
+                    symbolsList.Add(str[i].ToString());
                 }
-                else
-                {
-                    symbol += a;
-                }
+
+                else symbol += str[i];
             }
-            if (str[str.Length - 2] != ')' && str[str.Length - 1] != ')' && (str[str.Length - 1] != ' ' || str[str.Length - 1] == ' ')) symbolsList.Add(symbol);
-            symbolsList.Add("$");
+            if (str[str.Length - 2] != ')' && str[str.Length - 1] != ')') symbolsList.Add(symbol);
+
+            symbolsList.Add("$"); //Доллар необходим, так как он сигнализирует алгоритму, что строка закончилась.
 
             return symbolsList;
-        }
+        } 
 
-        private void PerformOperation(string symbol)
+        private void ExecuteOperation(string symbol)
         {
-            switch (jumpTable[GetFunctionFromTable(T.Peek()), GetFunctionFromTable(symbol)])
+            byte index1 = GetFunctionNumberFromTransitionTable(T.Peek());
+            byte index2 = GetFunctionNumberFromTransitionTable(symbol);
+
+            switch (transitionTable[index1, index2])
             {
                 case 1: T.Push(symbol);
                     break;
                 case 2:
                 {
                     string operation = T.Peek();
-                    int secondNum = E.Peek();
+                    double secondNum = E.Peek();
                     E.Pop();
-                    int firstNum = E.Peek();
+                    double firstNum = E.Peek();
                     E.Pop();
-                    int result = Calculate(firstNum, secondNum, operation);
+                    double result = CalculateExpression(firstNum, secondNum, operation);
                     E.Push(result);
                     T.Pop();
                     T.Push(symbol);
@@ -132,40 +137,40 @@ namespace Var2Practice
                 case 4:
                 {
                     string operation = T.Peek();
-                    int secondNum = E.Peek();
+                    double secondNum = E.Peek();
                     E.Pop();
-                    int firstNum = E.Peek();
+                    double firstNum = E.Peek();
                     E.Pop();
-                    int result = Calculate(firstNum, secondNum, operation);
+                    double result = CalculateExpression(firstNum, secondNum, operation);
                     E.Push(result);
                     T.Pop();
-                    PerformOperation(symbol);
+                    ExecuteOperation(symbol);
                 }
                     break;
                 case 5: throw new Exception("Возникла ошибка!");
                 case 6: return;
             }
 
-        }
+        } 
 
         #endregion
 
-        public int GetResult()
+        public double GetResult()
         {
             T.Push("$");
 
-            List<string> str = ReadString(ArithmeticExpression);
+            List<string> symbolsList = ParsingString(ArithmeticExpression);
 
-            for (int i = 0; i < str.Count; i++)
+            foreach (string symbol in symbolsList)
             {
-                if (str[i] != "$" && str[i] != "(" && str[i] != "+" && str[i] != "-" && str[i] != "*" &&
-                    str[i] != "/" && str[i] != ")") E.Push(int.Parse(str[i].ToString()));
-                else PerformOperation(str[i]);
+                if (symbol != "$" && symbol != "(" && symbol != "+" && symbol != "-" && symbol != "*" &&
+                    symbol != "/" && symbol != ")") E.Push(double.Parse(symbol));
+                else ExecuteOperation(symbol);
             }
 
             Result = E.Peek();
             return Result;
-        }
+        } 
     }
 }
 

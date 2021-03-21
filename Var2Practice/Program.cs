@@ -16,7 +16,7 @@ namespace Var2Practice
 
             CalculateClass calculateClass = new CalculateClass(arithmeticExpression);
 
-            int Result = calculateClass.GetResult();
+            double Result = calculateClass.GetResult();
 
             Console.WriteLine("Результат выражения: {0}", Result);
 

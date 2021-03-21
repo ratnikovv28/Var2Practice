@@ -12,27 +12,29 @@ namespace Test
         {
             string str = Console.ReadLine();
 
-            List<string> myList = new List<string>();
+            List<string> symbolsList = new List<string>();
 
-            int i = 0;
+            string symbol = "";
 
-            string s = "";
-
-            foreach (var a in str)
+            for (int i = 0; i < str.Length; i++)
             {
-                if(a == ' ') continue;
-                else if (a == '+' || a == '-' || a == '/' || a == '*' || a == '(' || a == ')')
-                {
-                    if (s != "") myList.Add(s);
-                    s = "";
-                    myList.Add(a.ToString());
+                if (str[i] == ' ') continue; //Проверка на наличие пробела, если есть, то в список символов пробел не идёт.
+
+                if ((str[i] == '-' && i == 0) || (str[i] == '-' && str[i - 1] == '('))      // Проверка возможных вариантов ввода:
+                {                                                                           // 1)Если пользователь введёт - в самом начале, например: -5 + 10.
+                    symbol += str[i];                                                       // 2)Если пользователь введёт отрицательное число в скобках, например: ... (-5 + 10).
                 }
-                else
+
+                else if (str[i] == '+' || str[i] == '-' || str[i] == '/' || str[i] == '*' || str[i] == '(' || str[i] == ')')
                 {
-                    s += a;
+                    if (symbol != "") symbolsList.Add(symbol);
+                    symbol = "";
+                    symbolsList.Add(str[i].ToString());
                 }
+
+                else symbol += str[i];
             }
-            if(str[str.Length - 2] != ')' && str[str.Length - 1] != ')' && (str[str.Length - 1] != ' ' || str[str.Length - 1] == ' ')) myList.Add(s);
+            if (str[str.Length - 2] != ')' && str[str.Length - 1] != ')') symbolsList.Add(symbol);
 
             Console.Read();
         }
