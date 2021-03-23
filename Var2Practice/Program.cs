@@ -14,11 +14,19 @@ namespace Var2Practice
 
             string arithmeticExpression = Console.ReadLine();
 
-            CalculateClass calculateClass = new CalculateClass(arithmeticExpression);
+            CalculateClass calculateClass = new CalculateClass();
 
-            double Result = calculateClass.GetResult();
-
-            Console.WriteLine("Результат выражения: {0}", Result);
+            try
+            {
+                double Result = calculateClass.GetResult(arithmeticExpression);
+                Console.WriteLine("Результат выражения: {0}", Result);
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(e.Message);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
 
             Console.ReadLine();
         }

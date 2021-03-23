@@ -10,14 +10,7 @@ namespace Var2Practice
     //Класс разрабатывал Ратников Владимир
     public class CalculateClass
     {
-        private string ArithmeticExpression;
-
         private double Result;
-
-        public CalculateClass(string arithmeticExpression)
-        {
-            ArithmeticExpression = arithmeticExpression;
-        }
 
         #region Стеки и таблица переходов
 
@@ -83,36 +76,33 @@ namespace Var2Practice
 
             for (int i = 0; i < str.Length; i++)
             {
-                if (str[i] != '+' && str[i] != '-' && str[i] != '/' && str[i] != '*' && str[i] != '(' && str[i] != ')'
-                    && str[i] != '1' && str[i] != '2' && str[i] != '3' && str[i] != '4' && str[i] != '5' && str[i] != '6'
-                    && str[i] != '7' && str[i] != '8' && str[i] != '9' && str[i] != '0' && str[i] != ',' && str[i] != ' ') throw new Exception("Некорректные данные"); //Проверка на корректные символы.
+                if (str[i] != '+' && str[i] != '-' && str[i] != '/' && str[i] != '*' && str[i] != '(' && str[i] != ')' &&
+                    str[i] != ',' && str[i] != ' ' && !char.IsNumber(str[i])) throw new Exception("Введены некорректные данные!"); // Проверка на корректность введеных символов.
 
-                if (str[i] == ' ') continue; //Проверка на наличие пробела, если есть, то в список символов пробел не идёт.
+                if (str[i] == ' ') continue; // Проверка на наличие пробела, если есть, то в список символов пробел не идёт.
 
-
-                if ((str[i] == '-' && i == 0) || (str[i] == '-' && str[i - 1] == '('))      // Проверка возможных вариантов ввода:
+                if ((str[i] == '-' && i == 0) || (str[i] == '-' && str[i - 1] == '('))      // Проверка возможных вариантов ввода отрицательного числа:
                 {                                                                           // 1)Если пользователь введёт - в самом начале, например: -5 + 10.
                     symbol += str[i];                                                       // 2)Если пользователь введёт отрицательное число в скобках, например: ... (-5 + 10).
                 }
 
-                else if (str[i] == '+' || str[i] == '-' || str[i] == '/' || str[i] == '*' || str[i] == '(' || str[i] == ')')
+                else if (!char.IsNumber(str[i]))
                 {
                     if (symbol != "") symbolsList.Add(symbol);
 
                     symbol = "";
 
-                    if (i != 0 && str[i] == '(' && (str[i - 1] == '1' || str[i - 1] == '2' || str[i - 1] == '3' || str[i - 1] == '4' || str[i - 1] == '5' || str[i - 1] == '6'
-                                                    || str[i - 1] == '7' || str[i - 1] == '8' || str[i - 1] == '9' || str[i - 1] == '0')) symbolsList.Add("*");
-
+                    if (i != 0 && str[i] == '(' && char.IsNumber(str[i - 1])) symbolsList.Add("*"); // Специальная проверка с добавлением умножения. Нужна для того, чтобы
+                                                                                                    // была возможность не писать знак умножения при умножении числа на скобку, например: 4(5+6). 
+                    
                     symbolsList.Add(str[i].ToString());
 
-                    if (i != str.Length - 1 && str[i] == ')' && (str[i + 1] == '(' || (str[i + 1] == '1' || str[i + 1] == '2' || str[i + 1] == '3' || str[i + 1] == '4' || str[i + 1] == '5' || str[i + 1] == '6'
-                        || str[i + 1] == '7' || str[i + 1] == '8' || str[i + 1] == '9' || str[i + 1] == '0'))) symbolsList.Add("*");
-                }
-
+                    if (i != str.Length - 1 && str[i] == ')' && (str[i + 1] == '(' || char.IsNumber(str[i]))) symbolsList.Add("*"); // Специальная проверка с добавлением умножения. Нужна для того, чтобы
+                }                                                                                                                       // 1)была возможность не писать знак умножения при умножении скобки на число, например: (5+6)4
+                                                                                                                                        // 2)была возможность не писать знак умножения при умножении двух скобок, например: (5+5)(5+6)
                 else symbol += str[i];
             }
-            if ((str[str.Length - 2] != ')' && str[str.Length - 1] != ')') || (str[str.Length - 1] != ')' && str[str.Length - 2] == ')')) symbolsList.Add(symbol);
+            if (str[str.Length - 1] != ')') symbolsList.Add(symbol);
 
             symbolsList.Add("$"); //Доллар необходим, так как он сигнализирует алгоритму, что строка закончилась.
 
@@ -156,7 +146,7 @@ namespace Var2Practice
                     ExecuteOperation(symbol);
                 }
                     break;
-                case 5: throw new Exception("Возникла ошибка!");
+                case 5: throw new Exception("Возникла ошибка при выполнении алгоритма!");
                 case 6: return;
             }
 
@@ -164,11 +154,11 @@ namespace Var2Practice
 
         #endregion
 
-        public double GetResult()
+        public double GetResult(string arithmeticExpression)
         {
             T.Push("$");
 
-            List<string> symbolsList = ParsingString(ArithmeticExpression);
+            List<string> symbolsList = ParsingString(arithmeticExpression);
 
             foreach (string symbol in symbolsList)
             {
