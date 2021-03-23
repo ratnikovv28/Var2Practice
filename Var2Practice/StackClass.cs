@@ -9,56 +9,66 @@ namespace Practice
     //Класс разрабатывал Степанов Дмитрий
     public class StackClass<T>
     {
-        private T[] items; // элементы стека
-        private int count; // количество элементов
-        const int n = 20; // количество элементов в массиве по умолчанию
+        private T[] elements; // массив, содержащий стек
+        private int count;    // индекс вершины стека
+        const int n = 10;
 
+        //Построить класс StackClass для реализации стека изначального размера 10
         public StackClass()
         {
-            items = new T[n];
+            elements = new T[n];
         }
 
-        public StackClass(int length)
+        //Возвратить значение true, если стек пуст.
+        public bool IsEmpty()
         {
-            items = new T[length];
+            return count == 0;
         }
 
-        // пуст ли стек
-        public bool IsEmpty
+        // Возвратить общую ёмкость стека.
+        public int Capacity()
         {
-            get { return count == 0; }
+            return elements.Length;
         }
 
-        // размер стека
-        public int Count
+        // Поместить элементы в стек.
+        public void Push(T element)
         {
-            get { return count; }
+            // увеличиваем стек
+            if (count == elements.Length)
+                Resize(elements.Length + 10);
+
+            elements[count++] = element;
         }
 
-        // добвление элемента
-        public void Push(T item)
-        {
-            // если стек заполнен, выбрасываем исключение
-            if (count == items.Length)
-                throw new InvalidOperationException("Переполнение стека");
-            items[count++] = item;
-        }
-
-        // извлечение элемента
+        // Извлечь элемент из стека.
         public T Pop()
         {
-            // если стек пуст, выбрасываем исключение
-            if (IsEmpty)
+            // Если стек пуст, выбраосить исключение.
+            if (IsEmpty())
                 throw new InvalidOperationException("Стек пуст");
-            T item = items[--count];
-            items[count] = default(T); // сбрасываем ссылку
-            return item;
-        }
+            T element = elements[--count];
+            elements[count] = default(T); // сбрасываем ссылку на последний элемент
 
-        // возвращаем элемент из верхушки стека
+            if (count > 0 && count < elements.Length - 10)
+                Resize(elements.Length - 10);
+
+            return element;
+        }
+        
+        // Получить самый верхний элемент стека
         public T Peek()
         {
-            return items[count - 1];
+            return elements[count - 1];
+        }
+
+        // Динамическое изменение размера стека
+        private void Resize(int max)
+        {
+            T[] tempItems = new T[max];
+            for (int i = 0; i < count; i++)
+                tempItems[i] = elements[i];
+            elements = tempItems;
         }
     }
 }

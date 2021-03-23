@@ -68,7 +68,7 @@ namespace Var2Practice
             return index;
         } 
 
-        private List<string> ParsingString(string str)
+        private List<string> ParsingString(string str) 
         {
             List<string> symbolsList = new List<string>();
 
